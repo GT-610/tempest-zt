@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from 'bun:test'
+import { afterAll, describe, expect, mock, test } from 'bun:test'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useTestDOM } from '../test/dom'
@@ -15,6 +15,13 @@ mock.module('../services/api', () => ({
 }))
 
 const { default: Planet } = await import('./Planet')
+
+// mock.module replaces the module in the test process, not just in this file.
+// Without restoring it, a later test file that imports the real API module gets
+// this planet-only stub and fails on the exports it expects.
+afterAll(() => {
+  mock.restore()
+})
 
 describe('Planet page', () => {
   test('renders the default generation workflow without the removed header export', () => {

@@ -2,7 +2,7 @@
   "name": "tempest-zt-web",
   "private": true,
   "version": "0.0.0",
-  "packageManager": "bun@1.4.5",
+  "packageManager": "bun@1.4.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,7 +28,7 @@
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
-    "@types/bun": "1.4.5",
+    "@types/bun": "1.4.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
