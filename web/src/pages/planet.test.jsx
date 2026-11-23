@@ -1,18 +1,23 @@
-import { describe, expect, mock, test } from 'bun:test'
+import { afterAll, describe, expect, mock, test } from 'bun:test'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { planetAPI } from '../services/api'
 import { useTestDOM } from '../test/dom'
 
 useTestDOM()
 
-// The page reads the controller's identity through this module. Mocking it lets
-// a test hold the request open and observe the loading branch, which a static
-// render can never reach.
-const apiMock = { getIdentity: mock() }
+// The page reads the controller's identity through this module. Replacing the
+// call on the real API object keeps the module itself intact: a mock.module
+// registration would leak into every later test file in the same process.
+const api = /** @type {any} */ (planetAPI)
+const originalGetIdentity = api.getIdentity
+const getIdentityMock = mock()
 
-mock.module('../services/api', () => ({
-  planetAPI: apiMock,
-}))
+api.getIdentity = getIdentityMock
+
+afterAll(() => {
+  api.getIdentity = originalGetIdentity
+})
 
 const { default: Planet } = await import('./Planet')
 
@@ -44,7 +49,7 @@ describe('Planet page', () => {
     // the guard below only exists to satisfy the type checker.
     /** @type {((value: unknown) => void) | undefined} */
     let resolveIdentity
-    apiMock.getIdentity = mock(
+    api.getIdentity = mock(
       () => new Promise((resolve) => {
         resolveIdentity = (value) => resolve(value)
       }),
